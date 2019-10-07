@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ArtikelRepository } from './artikels.repository';
 import { GetArtikelDTO } from './dto/getArtikel.dto';
@@ -15,7 +15,28 @@ export class ArtikelsService {
         return this.artikeRepository.getArtikels(getArtikelDTO);
 
     }
+    async getArtikelById(id: string): Promise<Artikel> {
+        const artikel = await this.artikeRepository.findOne(id);
+        if (!artikel) {
+            throw new NotFoundException(`Artikel With id ${id} not Found`);
+        }
+        return artikel;
+    }
     async createArtikel(createArtikelDTO: CreateArtikelDTO): Promise<Artikel> {
         return this.artikeRepository.createArtikel(createArtikelDTO);
     }
+    async updateStatusArtikel(id: string, status: string): Promise<Artikel> {
+        const artikel = await this.getArtikelById(id);
+        artikel.status = status;
+        await artikel.save();
+        return artikel;
+    }
+    async deleteArtikel(id: string): Promise<void> {
+        const result = await this.artikeRepository.delete(id);
+        if (result.affected === 0) {
+            throw new NotFoundException(`Artikel With ID "${id}" Not Found`);
+        }
+
+    }
+
 }

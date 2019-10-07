@@ -11,6 +11,8 @@ export class Artikel extends BaseEntity {
     @Column()
     category: String;
     @Column()
+    status: String;
+    @Column()
     creator: String;
     @CreateDateColumn({ type: 'timestamp' })
     createAt: Date;
