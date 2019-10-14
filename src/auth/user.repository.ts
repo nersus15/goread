@@ -1,6 +1,7 @@
 import { Repository, EntityRepository } from "typeorm";
 import { User } from "./user.entity";
 import * as uuid from 'uuid';
+import * as bcrypt from 'bcrypt';
 import { AuthCredentialsDTO } from "./dto/auth-credentials.dto";
 import { ConflictException, InternalServerErrorException } from "@nestjs/common";
 @EntityRepository(User)
@@ -12,8 +13,8 @@ export class UserRepository extends Repository<User>{
         user.id = uuid();
         user.email = email;
         user.username = username;
-        user.password = password;
-
+        user.salt = await bcrypt.genSalt();
+        user.password = await this.hashPassword(password, user.salt);
         try {
             // save user di database
             await user.save();
@@ -25,5 +26,8 @@ export class UserRepository extends Repository<User>{
             }
         }
         return user;
+    }
+    private async hashPassword(password: string, salt: string): Promise<string> {
+        return bcrypt.hash(password, salt);
     }
 }
