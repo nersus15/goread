@@ -2,6 +2,7 @@ import { Repository, EntityRepository } from "typeorm";
 import { User } from "./user.entity";
 import * as uuid from 'uuid';
 import { AuthCredentialsDTO } from "./dto/auth-credentials.dto";
+import { ConflictException, InternalServerErrorException } from "@nestjs/common";
 @EntityRepository(User)
 export class UserRepository extends Repository<User>{
     async signUp(authCredentialsDTO: AuthCredentialsDTO): Promise<User> {
@@ -13,9 +14,16 @@ export class UserRepository extends Repository<User>{
         user.username = username;
         user.password = password;
 
-        // save user di database
-        await user.save();
-
+        try {
+            // save user di database
+            await user.save();
+        } catch (err) {
+            if (err.code === '23505') {// Duplicate username or email
+                throw new ConflictException(err.detail);
+            } else {
+                throw new InternalServerErrorException();
+            }
+        }
         return user;
     }
 }
