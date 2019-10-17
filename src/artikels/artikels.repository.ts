@@ -4,10 +4,11 @@ import { CreateArtikelDTO } from "./dto/createArtikel.dto";
 import * as uuid from 'uuid';
 import { GetArtikelDTO } from "./dto/getArtikel.dto";
 import { ArtikelStatus } from "./artikel-status.enum";
+import { User } from "src/auth/user.entity";
 
 @EntityRepository(Artikel)
 export class ArtikelRepository extends Repository<Artikel>{
-    async createArtikel(createArtikelDTO: CreateArtikelDTO): Promise<Artikel> {
+    async createArtikel(createArtikelDTO: CreateArtikelDTO, user: User): Promise<Artikel> {
         const { title, content, category } = createArtikelDTO;
         const artikel = new Artikel();
 
@@ -15,9 +16,10 @@ export class ArtikelRepository extends Repository<Artikel>{
         artikel.title = title;
         artikel.content = content;
         artikel.category = category;
-        artikel.creator = "Fathurrahman"
-        artikel.status = ArtikelStatus.DRAFT
+        artikel.status = ArtikelStatus.DRAFT;
+        artikel.creator = user;
         await artikel.save();
+        delete artikel.creator;
         return artikel;
     }
     async getArtikels(getArtikelDTO: GetArtikelDTO): Promise<Artikel[]> {

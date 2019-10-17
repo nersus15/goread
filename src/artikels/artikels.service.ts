@@ -4,6 +4,7 @@ import { ArtikelRepository } from './artikels.repository';
 import { GetArtikelDTO } from './dto/getArtikel.dto';
 import { Artikel } from './artikel.entity';
 import { CreateArtikelDTO } from './dto/createArtikel.dto';
+import { User } from 'src/auth/user.entity';
 
 @Injectable()
 export class ArtikelsService {
@@ -22,8 +23,8 @@ export class ArtikelsService {
         }
         return artikel;
     }
-    async createArtikel(createArtikelDTO: CreateArtikelDTO): Promise<Artikel> {
-        return this.artikeRepository.createArtikel(createArtikelDTO);
+    async createArtikel(createArtikelDTO: CreateArtikelDTO, user: User): Promise<Artikel> {
+        return this.artikeRepository.createArtikel(createArtikelDTO, user);
     }
     async updateStatusArtikel(id: string, status: string): Promise<Artikel> {
         const artikel = await this.getArtikelById(id);

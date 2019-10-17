@@ -6,6 +6,8 @@ import { Artikel } from './artikel.entity';
 import { ArtikelStatus } from './artikel-status.enum';
 import { ArtikelStatusValidationPipe } from './pipes/artikel-status-validation.pipe';
 import { AuthGuard } from '@nestjs/passport';
+import { GetUser } from '../auth/get-user-decorator';
+import { User } from '../auth/user.entity';
 
 @Controller('artikels')
 export class ArtikelsController {
@@ -19,8 +21,8 @@ export class ArtikelsController {
     @Post()
     @UseGuards(AuthGuard())
     @UsePipes(ValidationPipe)
-    createArtikel(@Body() createArtikelDTO: CreateArtikelDTO): Promise<Artikel> {
-        return this.artikeService.createArtikel(createArtikelDTO);
+    createArtikel(@Body() createArtikelDTO: CreateArtikelDTO, @GetUser() user: User): Promise<Artikel> {
+        return this.artikeService.createArtikel(createArtikelDTO, user);
     }
 
     @Patch('/:id')
