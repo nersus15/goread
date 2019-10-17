@@ -45,7 +45,7 @@ export class UserRepository extends Repository<User>{
                 throw new UnauthorizedException("Invalid password");
             }
         } else {
-            throw new NotFoundException(`User with email: "${email}" was Not found`);
+            throw new UnauthorizedException(`User with email: "${email}" was Not found`);
         }
     }
 
