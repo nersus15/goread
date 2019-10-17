@@ -13,7 +13,11 @@ export class ArtikelsService {
         private artikeRepository: ArtikelRepository
     ) { }
     async getArtikels(getArtikelDTO: GetArtikelDTO): Promise<Artikel[]> {
-        return this.artikeRepository.getArtikels(getArtikelDTO);
+        return this.artikeRepository.getArtikels(getArtikelDTO, null);
+
+    }
+    async getMyArtikels(getArtikelDTO: GetArtikelDTO, user): Promise<Artikel[]> {
+        return this.artikeRepository.getArtikels(getArtikelDTO, user);
 
     }
     async getArtikelById(id: string): Promise<Artikel> {

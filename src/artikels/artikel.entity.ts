@@ -20,5 +20,7 @@ export class Artikel extends BaseEntity {
     createAt: Date;
     @CreateDateColumn({ type: 'timestamp' })
     updateAt: Date;
+    @Column()
+    creatorId: String;
 
 }

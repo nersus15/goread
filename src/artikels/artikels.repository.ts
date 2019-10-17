@@ -22,14 +22,18 @@ export class ArtikelRepository extends Repository<Artikel>{
         delete artikel.creator;
         return artikel;
     }
-    async getArtikels(getArtikelDTO: GetArtikelDTO): Promise<Artikel[]> {
+    async getArtikels(getArtikelDTO: GetArtikelDTO, user: User): Promise<Artikel[]> {
         const { keyword, status } = getArtikelDTO;
         const query = this.createQueryBuilder('artikel');
+        if (user) {
+            query.where('artikel.creatorId=:creatorId', { creatorId: user.id });
+        }
+
         if (status) {
             query.andWhere('artikel.status=:status', { status });
         }
         if (keyword) {
-            query.andWhere('artikel.title LIKE :keyword or artikel.content LIKE :keyword or artikel.category LIKE :keyword or artikel.creator LIKE :keyword', { keyword: `%${keyword}%` })
+            query.andWhere('artikel.title LIKE :keyword or artikel.content LIKE :keyword or artikel.category LIKE :keyword', { keyword: `%${keyword}%` })
         }
         const artikels = await query.getMany();
         return artikels;
