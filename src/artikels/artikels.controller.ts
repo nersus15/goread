@@ -18,7 +18,6 @@ export class ArtikelsController {
         return this.artikeService.getArtikels(getArtikel);
     }
     @Get('id/:id')
-    @UseGuards(AuthGuard())
     getArtikelById(@Param('id') id: string): Promise<Artikel> {
         return this.artikeService.getArtikelById(id, null);
     }
