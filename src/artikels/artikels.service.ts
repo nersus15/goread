@@ -16,12 +16,18 @@ export class ArtikelsService {
         return this.artikeRepository.getArtikels(getArtikelDTO, null);
 
     }
-    async getMyArtikels(getArtikelDTO: GetArtikelDTO, user): Promise<Artikel[]> {
+    async getMyArtikels(getArtikelDTO: GetArtikelDTO, user: User): Promise<Artikel[]> {
         return this.artikeRepository.getArtikels(getArtikelDTO, user);
 
     }
-    async getArtikelById(id: string): Promise<Artikel> {
-        const artikel = await this.artikeRepository.findOne(id);
+    async getArtikelById(id: string, user: User): Promise<Artikel> {
+        let artikel;
+        if (user) {
+            artikel = await this.artikeRepository.findOne({ where: { id, creatorId: user.id } });
+        } else {
+            artikel = await this.artikeRepository.findOne(id);
+        }
+
         if (!artikel) {
             throw new NotFoundException(`Artikel With id ${id} not Found`);
         }
@@ -30,9 +36,21 @@ export class ArtikelsService {
     async createArtikel(createArtikelDTO: CreateArtikelDTO, user: User): Promise<Artikel> {
         return this.artikeRepository.createArtikel(createArtikelDTO, user);
     }
-    async updateStatusArtikel(id: string, status: string): Promise<Artikel> {
-        const artikel = await this.getArtikelById(id);
-        artikel.status = status;
+    async updateStatusArtikel(id: string, user: User, status: string, params): Promise<Artikel> {
+        const artikel = await this.getArtikelById(id, user);
+        const { title, content, category } = params;
+        if (status) {
+            artikel.status = status;
+        }
+        if (title) {
+            artikel.title = title;
+        }
+        if (content) {
+            artikel.content = content;
+        }
+        if (category) {
+            artikel.category = category;
+        }
         await artikel.save();
         return artikel;
     }

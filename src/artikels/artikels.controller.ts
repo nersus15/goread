@@ -10,7 +10,6 @@ import { GetUser } from '../auth/get-user-decorator';
 import { User } from '../auth/user.entity';
 
 @Controller('artikels')
-@UseGuards(AuthGuard())
 export class ArtikelsController {
     constructor(private artikeService: ArtikelsService) { }
 
@@ -18,21 +17,30 @@ export class ArtikelsController {
     getArtikel(@Query(ValidationPipe) getArtikel: GetArtikelDTO) {
         return this.artikeService.getArtikels(getArtikel);
     }
+    @Get('id/:id')
+    @UseGuards(AuthGuard())
+    getArtikelById(@Param('id') id: string): Promise<Artikel> {
+        return this.artikeService.getArtikelById(id, null);
+    }
     @Get('/my')
+    @UseGuards(AuthGuard())
     getMyArtikel(@Query(ValidationPipe) getArtikel: GetArtikelDTO, @GetUser() user: User) {
         return this.artikeService.getMyArtikels(getArtikel, user);
     }
     @Post()
+    @UseGuards(AuthGuard())
     @UsePipes(ValidationPipe)
     createArtikel(@Body() createArtikelDTO: CreateArtikelDTO, @GetUser() user: User): Promise<Artikel> {
         return this.artikeService.createArtikel(createArtikelDTO, user);
     }
 
     @Patch('/:id')
-    updateArtikelStatus(@Param('id') id: string, @Body('status', ArtikelStatusValidationPipe) status: ArtikelStatus): Promise<Artikel> {
-        return this.artikeService.updateStatusArtikel(id, status);
+    @UseGuards(AuthGuard())
+    updateArtikelStatus(@Param('id') id: string, @GetUser() user: User, @Body() params, @Body('status', ArtikelStatusValidationPipe) status: ArtikelStatus): Promise<Artikel> {
+        return this.artikeService.updateStatusArtikel(id, user, status, params);
     }
     @Delete('/:id')
+    @UseGuards(AuthGuard())
     deleteArtikel(@Param('id') id: string): Promise<void> {
         return this.artikeService.deleteArtikel(id);
     }
