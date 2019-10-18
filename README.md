@@ -30,7 +30,9 @@ $ npm run test:cov
 
 ## Routes
 ---- /artikels -----
+```
 to get all artikels (without login/ authorization) - /artikels - GET
+```
 to get artikels of the user was login - /artikels/my - GET
 to get artikels by id (without login/ authorization) - artikels/id/:id -GET
 to get artikels with filter (content, status, title) - artikels/?keyword=(content/status/title) - GET
