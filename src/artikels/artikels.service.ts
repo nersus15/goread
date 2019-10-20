@@ -54,8 +54,8 @@ export class ArtikelsService {
         await artikel.save();
         return artikel;
     }
-    async deleteArtikel(id: string): Promise<void> {
-        const result = await this.artikeRepository.delete(id);
+    async deleteArtikel(id: string, user: User): Promise<void> {
+        const result = await this.artikeRepository.delete({ id, creatorId: user.id });
         if (result.affected === 0) {
             throw new NotFoundException(`Artikel With ID "${id}" Not Found`);
         }

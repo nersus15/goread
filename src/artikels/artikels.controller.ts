@@ -40,8 +40,8 @@ export class ArtikelsController {
     }
     @Delete('/:id')
     @UseGuards(AuthGuard())
-    deleteArtikel(@Param('id') id: string): Promise<void> {
-        return this.artikeService.deleteArtikel(id);
+    deleteArtikel(@Param('id') id: string, @GetUser() user: User): Promise<void> {
+        return this.artikeService.deleteArtikel(id, user);
     }
 
 }
