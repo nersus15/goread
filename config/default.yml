@@ -1,0 +1,10 @@
+server:
+  port: 3005
+
+db: 
+  type: 'postgres'
+  port: 1024
+  db_name: 'goread'
+
+jwt:
+  expiresIn: 3600

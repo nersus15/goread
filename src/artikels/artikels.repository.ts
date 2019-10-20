@@ -5,9 +5,11 @@ import * as uuid from 'uuid';
 import { GetArtikelDTO } from "./dto/getArtikel.dto";
 import { ArtikelStatus } from "./artikel-status.enum";
 import { User } from "src/auth/user.entity";
+import { Logger, InternalServerErrorException } from "@nestjs/common";
 
 @EntityRepository(Artikel)
 export class ArtikelRepository extends Repository<Artikel>{
+    private logger = new Logger('ArtikelRepository');
     async createArtikel(createArtikelDTO: CreateArtikelDTO, user: User): Promise<Artikel> {
         const { title, content, category } = createArtikelDTO;
         const artikel = new Artikel();
@@ -18,7 +20,14 @@ export class ArtikelRepository extends Repository<Artikel>{
         artikel.category = category;
         artikel.status = ArtikelStatus.DRAFT;
         artikel.creator = user;
-        await artikel.save();
+
+        try {
+            await artikel.save();
+        } catch (err) {
+            this.logger.error(`Failed to create artikel for user "${user.username}". Data: ${JSON.stringify(createArtikelDTO)}`, err.stack);
+
+        }
+
         delete artikel.creator;
         return artikel;
     }
@@ -35,7 +44,16 @@ export class ArtikelRepository extends Repository<Artikel>{
         if (keyword) {
             query.andWhere('artikel.title LIKE :keyword or artikel.content LIKE :keyword or artikel.category LIKE :keyword', { keyword: `%${keyword}%` })
         }
-        const artikels = await query.getMany();
-        return artikels;
+        try {
+            const artikels = await query.getMany();
+            return artikels;
+        } catch (err) {
+            if (user) {
+                this.logger.error(`Failed to get artikels for user "${user.username}". Filters: ${JSON.stringify(getArtikelDTO)}`, err.stack);
+            } else {
+                this.logger.error(`Failed to get artikels ", DTO: ${JSON.stringify(getArtikelDTO)}`, err.stack);
+            }
+            throw new InternalServerErrorException();
+        }
     }
 }
