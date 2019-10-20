@@ -8,10 +8,13 @@ export class ArtikelStatusValidationPipe implements PipeTransform {
         ArtikelStatus.PUBLISHED
     ];
     transform(value: any) {
-        value = value.toUpperCase();
-        if (!this.isValidStatus(value)) {
-            throw new BadRequestException(`${value} is an Invalid Status`);
+        if (value) {
+            value = value.toUpperCase();
+            if (!this.isValidStatus(value)) {
+                throw new BadRequestException(`${value} is an Invalid Status`);
+            }
         }
+
         return value;
     }
     private isValidStatus(status: any) {
