@@ -1,9 +1,9 @@
 server:
-  port: 3005
+  port: 1024 #Port for local server
 
 db: 
   type: 'postgres'
-  port: 1024
+  port: 5432  #Port your database server
   db_name: 'goread'
 
 jwt:
